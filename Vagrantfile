@@ -5,6 +5,13 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
+
+$script =<<-SCRIPT
+echo "I like Vagrant"
+echo "I love Linux"
+date > ~/vagrant_provisioned_at
+SCRIPT
+
 Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
@@ -17,10 +24,23 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"
   end
   
-  config.vm.provision :docker 
+  config.vm.provision :docker
+  config.vm.provision :shell, path: "bootstrap.sh"
+  config.vm.provision :file, source: "file.txt", destination: "file.txt"
+  config.vm.provision :file, source: "dir1", destination: "dir1"
+
   config.vm.define "server-1" do |dockerserver|
     dockerserver.vm.network "private_network", ip: '192.168.33.60'
     dockerserver.vm.hostname = "dockerserver"
+    dockerserver.vm.provision "shell", inline: "echo Hi Class!"
+    dockerserver.vm.provision "shell", inline: $script
+    dockerserver.vm.provision "shell" do |s|
+      s.inline = "echo $1"
+      s.args = ["AT", "Class!"]
+    end
+    dockerserver.vm.provision "docker" do |d|
+      d.run "hello-world"
+    end
   end
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
