@@ -25,6 +25,7 @@ Vagrant.configure("2") do |config|
   end
   
   config.vm.provision :docker
+  config.vm.provision :docker_compose
   config.vm.provision :shell, path: "bootstrap.sh"
   config.vm.provision :file, source: "file.txt", destination: "file.txt"
   config.vm.provision :file, source: "dir1", destination: "dir1"
