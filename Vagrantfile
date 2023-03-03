@@ -32,6 +32,8 @@ Vagrant.configure("2") do |config|
   config.vm.define "server-1" do |dockerserver|
     dockerserver.vm.network "private_network", ip: '192.168.33.60'
     dockerserver.vm.hostname = "dockerserver"
+    dockerserver.vm.provision :file, source:"/docker/docker-compose.ci.yaml",  destination:"docker-compose.ci.yaml"
+    dockerserver.vm.provision :docker_compose, yml:"/home/vagrant/docker-compose.yaml", run:"always"
     dockerserver.vm.provision "shell", inline: "echo Hi Class!"
     dockerserver.vm.provision "shell", inline: $script
     dockerserver.vm.provision "shell" do |s|
